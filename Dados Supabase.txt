@@ -1,0 +1,9 @@
+Projeto : PortalDigital
+Senha : qfC13uSG23d9MIQg
+
+
+anom - sb_publishable_LxS4fWewhz22TTy8wFDFEA_cVbfQ-eL
+
+https://fklvpiltkvbmdturgdsa.supabase.co
+
+streamlit run app.py
