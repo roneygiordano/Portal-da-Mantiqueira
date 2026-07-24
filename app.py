@@ -72,16 +72,20 @@ if not st.session_state.logado:
 
 # 🔓 2. ÁREA LOGADA
 else:
-    # Cabeçalho com o nome de quem entrou e o botão de Sair
-    col_t, col_s = st.columns([4, 1])
-    col_t.markdown(f"### 🏛️ {st.session_state.usuario_nome}")
+    # Cria uma linha com colunas para alinhar o botão à direita no topo
+    col_vazia, col_sair = st.columns([4, 1], vertical_alignment="center")
     
-    if col_s.button("Sair 🚪", key="botao_sair_sistema"):
+    # O botão de Sair fica na extrema direita, no topo absoluto da área logada
+    if col_sair.button("Sair 🚪", key="botao_sair_sistema"):
         st.session_state.logado = False
         st.session_state.perfil_usuario = ""
         st.session_state.usuario_nome = ""
         st.session_state.usuario_placet = None
         st.rerun()
+        
+    # O nome do usuário (Administrador) aparece logo abaixo do botão
+    st.markdown(f"### 🏛️ {st.session_state.usuario_nome}")
+    st.divider() # Linha elegante separando o cabeçalho do conteúdo das abas
 
     # 🛠️ SEPARAÇÃO DE TELAS BASEADA NO PERFIL
     if st.session_state.perfil_usuario == "admin":
@@ -97,5 +101,5 @@ else:
             
     elif st.session_state.perfil_usuario == "irmao":
         # Irmão comum entra em uma tela sem abas, direto para a função de frequência
-        # Mas vamos passar o Placet dele para que a tela saiba que deve travar a visão
         renderizar_aba_frequencia(supabase)
+
