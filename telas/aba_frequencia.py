@@ -193,10 +193,29 @@ def renderizar_aba_frequencia(supabase):
                 df_irmao = pd.DataFrame(dados_do_irmao)[["Data", "Situacao"]]
                 
                 # Ordena as reuniões de forma decrescente (da mais recente para a antiga)
+            dados_do_irmao = [d for d in dados_filtrados if str(d["Placet_Irmao"]).strip() == str(placet_logado).strip()]
+            
+            if not dados_do_irmao:
+                st.info("Nenhum registro de chamada encontrado para você neste período.")
+            else:
+                # Transforma em formato de tabela simples (Data | Situação)
+                df_irmao = pd.DataFrame(dados_do_irmao)[["Data", "Situacao"]]
+                
+                # ⚙️ O SEU TRECHO ENTRA EXATAMENTE AQUI:
                 df_irmao['data_obj'] = df_irmao['Data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
                 df_irmao = df_irmao.sort_values(by='data_obj', ascending=False).drop(columns=['data_obj'])
-                # Desenha a tabela limpa
-                st.dataframe(df_irmao,column_config={"Data": st.column_config.TextColumn("📅 Data da Sessão"),"Situacao": st.column_config.TextColumn("📋 Sua Situação")}, use_container_width=True,hide_index=True)
-                except Exception as e:
-                st.error("Erro ao processar pauta.")
-                st.code(e)
+                
+                # Desenha a tabela limpa na tela do celular
+                st.dataframe(
+                    df_irmao,
+                    column_config={
+                        "Data": st.column_config.TextColumn("📅 Data da Sessão"),
+                        "Situacao": st.column_config.TextColumn("📋 Sua Situação")
+                    },
+                    use_container_width=True,
+                    hide_index=True
+                )
+            
+    except Exception as e:
+        st.error("Erro ao processar pauta.")
+        st.code(e)
