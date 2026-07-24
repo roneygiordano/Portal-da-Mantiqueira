@@ -4,35 +4,6 @@ import pandas as pd
 from datetime import datetime
 
 def renderizar_aba_frequencia(supabase):
-    # Injeta o CSS customizado logo no início para travar o layout 2x2 no celular
-    st.markdown(
-        """
-        <style>
-        /* Reduz o espaço padrão entre colunas do Streamlit */
-        [data-testid="stHorizontalBlock"] {
-            gap: 8px !important;
-        }
-        
-        /* Força colunas a ocuparem 50% de largura no celular */
-        [data-testid="column"] {
-            flex: 1 1 calc(50% - 4px) !important;
-            min-width: 45% !important;
-        }
-
-        /* Ajuste fino de tamanho de texto em telas pequenas */
-        @media (max-width: 640px) {
-            [data-testid="stMetricLabel"] {
-                font-size: 0.85rem !important;
-            }
-            [data-testid="stMetricValue"] {
-                font-size: 1.35rem !important;
-            }
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
     st.subheader("📊 Livro de Frequência Interativo")
     
     # Dicionário para traduzir o número do mês para o nome em português
@@ -93,25 +64,22 @@ def renderizar_aba_frequencia(supabase):
         # Cálculo seguro da porcentagem (%) para evitar divisão por zero
         porcentagem = (total_presencas / total_reunioes) * 100 if total_reunioes > 0 else 0.0
         
-        # --- SEU LAYOUT NOVO 2x2 + CENTRALIZADO ---
-        l1_c1, l1_c2 = st.columns(2)
-        l1_c1.metric(label="📅 Reuniões", value=f"{total_reunioes}")
-        l1_c2.metric(label="🟢 Presenças", value=f"{total_presencas}")
-        
-        l2_c1, l2_c2 = st.columns(2)
-        l2_c1.metric(label="🔴 Faltas", value=f"{total_faltas}")
-        l2_c2.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
-        
-        _, col_centro, _ = st.columns()
-        col_centro.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
+        # Exibe os 5 blocos de resultados lado a lado na tela
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1: st.metric(label="📅 Reuniões", value=f"{total_reunioes}")
+        with col2: st.metric(label="🟢 Presenças", value=f"{total_presencas}")
+        with col3: st.metric(label="🔴 Faltas", value=f"{total_faltas}")
+        with col4: st.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
+        with col5: st.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
         
         st.write("---") # Linha divisória para separar o painel da planilha abaixo
         
         # =======================================================
-        # SEU CÓDIGO ORIGINAL DA PLANILHA DINÂMICA RESTAURADO
+        # SEU CÓDIGO ORIGINAL DA PLANILHA DINÂMICA DAQUI PARA BAIXO
         # =======================================================
         st.write("### 📝 Livro de Presenças Geral")
         
+        # Cria dicionários de apoio para o Python linkar Placet -> Nome
         mapa_placet_nome = {i['placet']: i['nome'] for i in irmaos.data}
         mapa_ids_banco = {}
         
@@ -158,7 +126,7 @@ def renderizar_aba_frequencia(supabase):
 
         st.write("#### 🔍 Filtrar Pauta")
         
-        # RESTAURADO: Sua ordenação e extração originais por índices [2]
+        # Correção inteligente para evitar falhas ao ordenar a lista de meses
         lista_meses_ordenada = sorted(list(meses_disponiveis_no_banco), key=lambda x: (x[1], x[0]), reverse=True)
         opcoes_filtro = ["Exibir Todas as Reuniões"] + [item[2] for item in lista_meses_ordenada]
         
@@ -198,6 +166,18 @@ def renderizar_aba_frequencia(supabase):
             alteracoes = st.session_state.editor_frequencia["edited_rows"]
             for idx, col_alteradas in alteracoes.items():
                 nome_alt = df_final.iloc[idx]["Nome do Irmão"]
-                
+                for dt_alt, val_sinal in col_alteradas.items():
+                    id_banco = mapa_ids_banco.get((nome_alt, dt_alt))
+                    
+                    status_puro = "Presença"
+                    if "Falta" in val_sinal: status_puro = "Falta"
+                    elif "Justificada" in val_sinal: status_puro = "Justificada"
+                    
+                    if id_banco:
+                        supabase.table("livro_presencas").update({"situacao": status_puro}).eq("id", id_banco).execute()
+                        st.toast(f"Frequência de {nome_alt} updated!", icon="💾")
+            st.rerun()
+            
     except Exception as e:
-        st.error(f"Erro ao carregar os dados de frequência: {e}")
+        st.error("Erro ao processar pauta.")
+        st.code(e)
