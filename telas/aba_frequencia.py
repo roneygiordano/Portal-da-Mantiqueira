@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-
 def renderizar_aba_frequencia(supabase):
     st.subheader("📊 Livro de Frequência")
     
