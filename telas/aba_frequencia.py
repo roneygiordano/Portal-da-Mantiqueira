@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 
 def renderizar_aba_frequencia(supabase):
-    st.subheader("📊 Livro de Frequência Interativo")
+    st.subheader("📊 Livro de Frequência")
     
     # Captura os dados de sessão definidos no login (app.py)
     perfil_atual = st.session_state.get("perfil_usuario", "irmao")
@@ -30,7 +30,7 @@ def renderizar_aba_frequencia(supabase):
         # =======================================================
         # 🎯 PARTE 1: MÉTRICAS DO TOPO (MÉTRICAS DO ANO ATUAL)
         # =======================================================
-        st.write("### 🔍 Resumo de Assiduidade")
+        st.write("### 🔍 Resumo ")
         
         if perfil_atual == "admin":
             # Administrador escolhe qual irmão quer analisar
@@ -83,7 +83,7 @@ def renderizar_aba_frequencia(supabase):
         # =======================================================
         # 📊 PARTE 2: HISTÓRICO DE REUNIÕES E FILTRO DE MÊS
         # =======================================================
-        st.write("### 📅 Histórico Detalhado por Mês")
+        st.write("### 📅 Histórico Mês")
         
         mapa_placet_nome = {i['placet']: i['nome'] for i in irmaos.data}
         mapa_ids_banco = {}
