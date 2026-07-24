@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 
 def renderizar_aba_frequencia(supabase):
-        # Injeta o CSS customizado logo no início da aba para travar o layout do celular
+           # Injeta o CSS customizado logo no início da aba para travar o layout do celular
     st.markdown(
         """
         <style>
@@ -32,7 +32,6 @@ def renderizar_aba_frequencia(supabase):
         """,
         unsafe_allow_html=True
     )
-
 
     st.subheader("📊 Livro de Frequência")
     
