@@ -93,28 +93,25 @@ def renderizar_aba_frequencia(supabase):
         # Cálculo seguro da porcentagem (%) para evitar divisão por zero
         porcentagem = (total_presencas / total_reunioes) * 100 if total_reunioes > 0 else 0.0
         
-        # --- LINHA 1 (2 Colunas) ---
+        # --- SEU LAYOUT NOVO 2x2 + CENTRALIZADO ---
         l1_c1, l1_c2 = st.columns(2)
         l1_c1.metric(label="📅 Reuniões", value=f"{total_reunioes}")
         l1_c2.metric(label="🟢 Presenças", value=f"{total_presencas}")
         
-        # --- LINHA 2 (2 Colunas) ---
         l2_c1, l2_c2 = st.columns(2)
         l2_c1.metric(label="🔴 Faltas", value=f"{total_faltas}")
         l2_c2.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
         
-        # --- LINHA 3 (Porcentagem Centralizada) ---
         _, col_centro, _ = st.columns()
         col_centro.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
         
         st.write("---") # Linha divisória para separar o painel da planilha abaixo
         
         # =======================================================
-        # SEU CÓDIGO ORIGINAL DA PLANILHA DINÂMICA DAQUI PARA BAIXO
+        # SEU CÓDIGO ORIGINAL DA PLANILHA DINÂMICA RESTAURADO
         # =======================================================
         st.write("### 📝 Livro de Presenças Geral")
         
-        # Cria dicionários de apoio para o Python linkar Placet -> Nome
         mapa_placet_nome = {i['placet']: i['nome'] for i in irmaos.data}
         mapa_ids_banco = {}
         
@@ -161,7 +158,7 @@ def renderizar_aba_frequencia(supabase):
 
         st.write("#### 🔍 Filtrar Pauta")
         
-        # Correção inteligente para evitar falhas ao ordenar a lista de meses
+        # RESTAURADO: Sua ordenação e extração originais por índices [2]
         lista_meses_ordenada = sorted(list(meses_disponiveis_no_banco), key=lambda x: (x[1], x[0]), reverse=True)
         opcoes_filtro = ["Exibir Todas as Reuniões"] + [item[2] for item in lista_meses_ordenada]
         
@@ -197,12 +194,10 @@ def renderizar_aba_frequencia(supabase):
             
         df_editado = st.data_editor(df_final, column_config=config_col, use_container_width=True, hide_index=True, key="editor_frequencia")
         
-        # Tratamento seguro caso haja edições na tabela
         if st.session_state.editor_frequencia and "edited_rows" in st.session_state.editor_frequencia:
             alteracoes = st.session_state.editor_frequencia["edited_rows"]
             for idx, col_alteradas in alteracoes.items():
                 nome_alt = df_final.iloc[idx]["Nome do Irmão"]
-                # Caso precise salvar as edições no banco futuramente, a lógica entra aqui
                 
     except Exception as e:
         st.error(f"Erro ao carregar os dados de frequência: {e}")
