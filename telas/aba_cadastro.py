@@ -3,7 +3,7 @@ import streamlit as st
 from datetime import date
 
 def renderizar_aba_cadastro(supabase):
-    st.subheader("👥 Cadastrar Novo Irmão no Quadro Fixo")
+    st.subheader("👥 Cadastrar Irmão no Quadro")
     
     with st.form("form_cadastro_irmao", clear_on_submit=True):
         novo_nome = st.text_input("Nome Completo do Irmão")
