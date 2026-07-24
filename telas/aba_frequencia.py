@@ -30,7 +30,7 @@ def renderizar_aba_frequencia(supabase):
         # =======================================================
         # 🎯 PARTE 1: MÉTRICAS DO TOPO (MÉTRICAS DO ANO ATUAL)
         # =======================================================
-        st.write("### 🔍 Resumo")
+        st.write("### 🔍 Resumo ")
         
         if perfil_atual == "admin":
             # Administrador escolhe qual irmão quer analisar
@@ -70,71 +70,13 @@ def renderizar_aba_frequencia(supabase):
                         
         porcentagem = (total_presencas / total_reunioes) * 100 if total_reunioes > 0 else 0.0
         
-        # 📱 GRADE MOBILE FIXA 2X2 + PORCENTAGEM EMBAIXO
-        st.markdown("""
-        <style>
-        .mobile-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .mobile-card {
-            background-color: rgba(128, 128, 128, 0.06);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            border: 1px solid rgba(128, 128, 128, 0.1);
-        }
-        .mobile-label {
-            font-size: 0.78rem;
-            color: #6c757d;
-            font-weight: 500;
-        }
-        .mobile-value {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-top: 2px;
-        }
-        .mobile-footer-card {
-            background-color: rgba(37, 99, 235, 0.06);
-            border: 1px solid rgba(37, 99, 235, 0.15);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            width: 100%;
-            margin: 0 auto;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
-        st.markdown(f"""
-        <div class="mobile-grid">
-            <div class="mobile-card">
-                <div class="mobile-label">📅 Reuniões</div>
-                <div class="mobile-value" style="color: #1e293b;">{total_reunioes}</div>
-            </div>
-            <div class="mobile-card">
-                <div class="mobile-label">🟢 Presenças</div>
-                <div class="mobile-value" style="color: #16a34a;">{total_presencas}</div>
-            </div>
-            <div class="mobile-card">
-                <div class="mobile-label">🔴 Faltas</div>
-                <div class="mobile-value" style="color: #dc2626;">{total_faltas}</div>
-            </div>
-            <div class="mobile-card">
-                <div class="mobile-label">🟡 Justificadas</div>
-                <div class="mobile-value" style="color: #ca8a04;">{total_justificadas}</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown(f"""
-        <div class="mobile-footer-card">
-            <div class="mobile-label" style="color: #2563eb;">📈 Porcentagem de Assiduidade</div>
-            <div class="mobile-value" style="color: #2563eb; font-size: 1.6rem;">{porcentagem:.1f}%</div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Desenha os 5 blocos de métricas lado a lado
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1: st.metric(label="📅 Reuniões", value=f"{total_reunioes}")
+        with col2: st.metric(label="🟢 Presenças", value=f"{total_presencas}")
+        with col3: st.metric(label="🔴 Faltas", value=f"{total_faltas}")
+        with col4: st.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
+        with col5: st.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
         
         st.write("---") 
         
@@ -187,10 +129,12 @@ def renderizar_aba_frequencia(supabase):
                 
                 mapa_ids_banco[(nome_irmao, data_coluna)] = id_banco
 
+        # Renderização do seletor de mês na tela
         lista_meses_ordenada = sorted(list(meses_disponiveis_no_banco), key=lambda x: (x[1], x[0]), reverse=True)
         opcoes_filtro = ["Exibir Todas as Reuniões"] + [item[2] for item in lista_meses_ordenada]
         mes_selecionado = st.selectbox("Selecione o mês que deseja visualizar:", opcoes_filtro, key="filtro_mes_geral")
 
+        # Filtra os registros baseados no mês escolhido
         dados_filtrados = dados_brutos
         if mes_selecionado != "Exibir Todas as Reuniões":
             for mm, yyyy, nome_ma in lista_meses_ordenada:
@@ -200,6 +144,7 @@ def renderizar_aba_frequencia(supabase):
 
         # 🛠========= EXIBIÇÃO DIFERENCIADA POR PERFIL =========
         if perfil_atual == "admin":
+            # 🔓 Visão do Administrador: Tabela Dinâmica Completa com Editor
             st.write("📝 *Modo Editor: Altere as presenças diretamente na planilha abaixo.*")
             df_final = pd.DataFrame([{"Nome do Irmão": nome} for nome in mapa_placet_nome.values()])
             
@@ -218,58 +163,49 @@ def renderizar_aba_frequencia(supabase):
             config_col = {"Nome do Irmão": st.column_config.TextColumn("Nome do Irmão", disabled=True)}
             for col in [c for c in df_final.columns if c != "Nome do Irmão"]:
                 config_col[col] = st.column_config.SelectboxColumn(col, options=["🟢 Presença", "🔴 Falta", "🟡 Justificada", "⚪ Sem Registro"], required=True)
+                
+            df_editado = st.data_editor(df_final, column_config=config_col, use_container_width=True, hide_index=True, key="editor_frequencia")
             
-            # --- FORMULÁRIO SEGURO PARA ENCAPSULAR O EDITOR ---
-            with st.form("formulario_frequencia_admin"):
-                df_editado = st.data_editor(
-                    df_final, 
-                    column_config=config_col, 
-            # --- CONTINUAÇÃO DA CONFIGURAÇÃO DO EDITOR ---
-            with st.form("formulario_frequencia_admin"):
-                df_editado = st.data_editor(
-                    df_final, 
-                    column_config=config_col, 
-                    use_container_width=True, 
-                    hide_index=True, 
-                    key="editor_frequencia"
-                )
-                
-                btn_salvar = st.form_submit_button("💾 Salvar Alterações no Banco", use_container_width=True)
-                
-                if btn_salvar:
-                    alteracoes = st.session_state.editor_frequencia.get("edited_rows", {})
-                    if not alteracoes:
-                        st.info("Nenhuma modificação foi feita na pauta.")
-                    else:
-                        sucesso_ao_salvar = False
-                        for idx, col_alteradas in alteracoes.items():
-                            nome_alt = df_final.iloc[idx]["Nome do Irmão"]
-                            for dt_alt, val_sinal in col_alteradas.items():
-                                id_banco = mapa_ids_banco.get((nome_alt, dt_alt))
-                                
-                                status_puro = "Presença"
-                                if "Falta" in val_sinal: 
-                                    status_puro = "Falta"
-                                elif "Justificada" in val_sinal: 
-                                    status_puro = "Justificada"
-                                
-                                if id_banco:
-                                    supabase.table("livro_presencas").update({"situacao": status_puro}).eq("id", id_banco).execute()
-                                    sucesso_ao_salvar = True
+            # Lógica para salvar as alterações do Admin no Supabase
+            if st.session_state.editor_frequencia and "edited_rows" in st.session_state.editor_frequencia:
+                alteracoes = st.session_state.editor_frequencia["edited_rows"]
+                for idx, col_alteradas in alteracoes.items():
+                    nome_alt = df_final.iloc[idx]["Nome do Irmão"]
+                    for dt_alt, val_sinal in col_alteradas.items():
+                        id_banco = mapa_ids_banco.get((nome_alt, dt_alt))
+                        status_puro = "Presença"
+                        if "Falta" in val_sinal: status_puro = "Falta"
+                        elif "Justificada" in val_sinal: status_puro = "Justificada"
                         
-                        if sucesso_ao_salvar:
-                            st.success("Dados sincronizados com o Supabase com sucesso!")
-                            st.rerun()
+                        if id_banco:
+                            supabase.table("livro_presencas").update({"situacao": status_puro}).eq("id", id_banco).execute()
+                            st.toast(f"Frequência de {nome_alt} atualizada!", icon="💾")
+                st.rerun()
+                
         else:
-            # 🔒 Visão do Irmão comum
+            # 🔒 Visão do Irmão: Mostra apenas o histórico dele em formato de linhas limpas para celular
             dados_do_irmao = [d for d in dados_filtrados if str(d["Placet_Irmao"]).strip() == str(placet_logado).strip()]
+            
             if not dados_do_irmao:
                 st.info("Nenhum registro de chamada encontrado para você neste período.")
             else:
+                # Transforma em formato de tabela simples (Data | Situação)
                 df_irmao = pd.DataFrame(dados_do_irmao)[["Data", "Situacao"]]
+                
+                # Ordena as reuniões de forma decrescente (da mais recente para a antiga)
+            dados_do_irmao = [d for d in dados_filtrados if str(d["Placet_Irmao"]).strip() == str(placet_logado).strip()]
+            
+            if not dados_do_irmao:
+                st.info("Nenhum registro de chamada encontrado para você neste período.")
+            else:
+                # Transforma em formato de tabela simples (Data | Situação)
+                df_irmao = pd.DataFrame(dados_do_irmao)[["Data", "Situacao"]]
+                
+                # ⚙️ O SEU TRECHO ENTRA EXATAMENTE AQUI:
                 df_irmao['data_obj'] = df_irmao['Data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
                 df_irmao = df_irmao.sort_values(by='data_obj', ascending=False).drop(columns=['data_obj'])
                 
+                # Desenha a tabela limpa na tela do celular
                 st.dataframe(
                     df_irmao,
                     column_config={
@@ -279,6 +215,7 @@ def renderizar_aba_frequencia(supabase):
                     use_container_width=True,
                     hide_index=True
                 )
+            
     except Exception as e:
         st.error("Erro ao processar pauta.")
         st.code(e)
