@@ -69,7 +69,7 @@ def renderizar_aba_frequencia(supabase):
                         
         porcentagem = (total_presencas / total_reunioes) * 100 if total_reunioes > 0 else 0.0
         
-       # --- LINHA 1: Reuniões e Presenças ---
+      # --- LINHA 1: Reuniões e Presenças ---
 col1, col2 = st.columns(2, gap="small")
 with col1: st.metric(label="📅 Reuniões", value=f"{total_reunioes}")
 with col2: st.metric(label="🟢 Presenças", value=f"{total_presencas}")
@@ -80,7 +80,7 @@ with col3: st.metric(label="🔴 Faltas", value=f"{total_faltas}")
 with col4: st.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
 
 # --- LINHA 3: Porcentagem Centralizada ---
-# Criamos uma coluna central maior (proporção 2) com duas laterais vazias (proporção 1)
+# [1, 2, 1] cria a coluna do meio duas vezes maior que as laterais vazias
 col_esq, col5, col_dir = st.columns([1, 2, 1], gap="small")
 with col5: st.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
 
