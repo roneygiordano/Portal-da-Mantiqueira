@@ -3,7 +3,7 @@ import streamlit as st
 from datetime import date
 
 def renderizar_aba_cadastro(supabase):
-    st.subheader("👥 Cadastrar Irmão no Quadro")
+    st.subheader("👥 Cadastrar Irmão")
     
     with st.form("form_cadastro_irmao", clear_on_submit=True):
         novo_nome = st.text_input("Nome Completo do Irmão")
@@ -35,7 +35,7 @@ def renderizar_aba_cadastro(supabase):
                     st.error(f"Erro ao acessar o banco de dados: {erro}")
 
     st.write("---")
-    st.subheader("📅 Lançar Nova Reunião Geral")
+    st.subheader("📅 Lançar Nova Reunião")
     st.write("Cria uma pauta de chamada única para a data selecionada.")
     
     data_selecionada = st.date_input("Data da Reunião", value=date.today(), format="DD/MM/YYYY")
