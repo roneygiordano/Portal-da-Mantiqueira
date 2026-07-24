@@ -69,15 +69,22 @@ def renderizar_aba_frequencia(supabase):
                         
         porcentagem = (total_presencas / total_reunioes) * 100 if total_reunioes > 0 else 0.0
         
-        # Desenha os 5 blocos de métricas lado a lado
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1: st.metric(label="📅 Reuniões", value=f"{total_reunioes}")
-        with col2: st.metric(label="🟢 Presenças", value=f"{total_presencas}")
-        with col3: st.metric(label="🔴 Faltas", value=f"{total_faltas}")
-        with col4: st.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
-        with col5: st.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
-        
-        st.write("---") 
+       # --- LINHA 1: Reuniões e Presenças ---
+col1, col2 = st.columns(2, gap="small")
+with col1: st.metric(label="📅 Reuniões", value=f"{total_reunioes}")
+with col2: st.metric(label="🟢 Presenças", value=f"{total_presencas}")
+
+# --- LINHA 2: Faltas e Justificadas ---
+col3, col4 = st.columns(2, gap="small")
+with col3: st.metric(label="🔴 Faltas", value=f"{total_faltas}")
+with col4: st.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
+
+# --- LINHA 3: Porcentagem Centralizada ---
+# Criamos uma coluna central maior (proporção 2) com duas laterais vazias (proporção 1)
+col_esq, col5, col_dir = st.columns([1, 2, 1], gap="small")
+with col5: st.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
+
+st.divider()
         
         # =======================================================
         # 📊 PARTE 2: HISTÓRICO DE REUNIÕES E FILTRO DE MÊS
