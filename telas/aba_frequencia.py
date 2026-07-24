@@ -4,29 +4,14 @@ import pandas as pd
 from datetime import datetime
 
 def renderizar_aba_frequencia(supabase):
-           # Injeta o CSS customizado logo no início da aba para travar o layout do celular
+    # Injeta o CSS customizado logo no início da aba para travar o layout do celular
     st.markdown(
         """
         <style>
-        /* Remove o espaçamento exagerado padrão do Streamlit entre colunas */
-        [data-testid="stHorizontalBlock"] {
-            gap: 8px !important;
-        }
-        
-        /* Força as colunas a ficarem lado a lado (50% de largura cada) */
+        /* Força as colunas de métricas a ocuparem metade da largura no celular (2 por linha) */
         [data-testid="column"] {
-            flex: 1 1 calc(50% - 4px) !important;
+            flex: 1 1 calc(50% - 10px) !important;
             min-width: 45% !important;
-        }
-
-        /* Reduz o tamanho da fonte das métricas apenas em telas pequenas para não quebrar linha */
-        @media (max-width: 640px) {
-            [data-testid="stMetricLabel"] {
-                font-size: 0.85rem !important;
-            }
-            [data-testid="stMetricValue"] {
-                font-size: 1.4rem !important;
-            }
         }
         </style>
         """,
