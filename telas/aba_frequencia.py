@@ -83,7 +83,7 @@ def renderizar_aba_frequencia(supabase):
         # =======================================================
         # 📊 PARTE 2: HISTÓRICO DE REUNIÕES E FILTRO DE MÊS
         # =======================================================
-        st.write("### 📅 Histórico Mês")
+        st.write("### 📅 Histórico do Mês")
         
         mapa_placet_nome = {i['placet']: i['nome'] for i in irmaos.data}
         mapa_ids_banco = {}
