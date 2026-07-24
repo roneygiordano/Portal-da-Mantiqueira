@@ -4,6 +4,20 @@ import pandas as pd
 from datetime import datetime
 
 def renderizar_aba_frequencia(supabase):
+    # Injeta o CSS customizado logo no início da aba para travar o layout do celular
+    st.markdown(
+        """
+        <style>
+        /* Força as colunas de métricas a ocuparem metade da largura no celular (2 por linha) */
+        [data-testid="column"] {
+            flex: 1 1 calc(50% - 10px) !important;
+            min-width: 45% !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
     st.subheader("📊 Livro de Frequência")
     
     # Captura os dados de sessão definidos no login (app.py)
@@ -70,13 +84,20 @@ def renderizar_aba_frequencia(supabase):
                         
         porcentagem = (total_presencas / total_reunioes) * 100 if total_reunioes > 0 else 0.0
         
-        # Desenha os 5 blocos de métricas lado a lado
-        col1, col2, col3, col4, col5 = st.columns(5)
-        with col1: st.metric(label="📅 Reuniões", value=f"{total_reunioes}")
-        with col2: st.metric(label="🟢 Presenças", value=f"{total_presencas}")
-        with col3: st.metric(label="🔴 Faltas", value=f"{total_faltas}")
-        with col4: st.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
-        with col5: st.metric(label="📈 Porcentagem", value=f"{porcentagem:.1f}%")
+        # --- LINHA 1 DO DASHBOARD (2 Colunas) ---
+        l1_c1, l1_c2 = st.columns(2)
+        l1_c1.metric(label="📅 Reuniões", value=f"{total_reunioes}")
+        l1_c2.metric(label="🟢 Presenças", value=f"{total_presencas}")
+
+        # --- LINHA 2 DO DASHBOARD (2 Colunas) ---
+        l2_c1, l2_c2 = st.columns(2)
+        l2_c1.metric(label="🔴 Faltas", value=f"{total_faltas}")
+        l2_c2.metric(label="🟡 Justificadas", value=f"{total_justificadas}")
+
+        # --- LINHA 3 DO DASHBOARD (Porcentagem Centralizada) ---
+        # Criamos uma coluna central para destacar a métrica principal
+        _, col_centro, _ = st.columns([1, 2, 1])
+        col_centro.metric(label="📈 Porcentagem de Assiduidade", value=f"{porcentagem:.1f}%")
         
         st.write("---") 
         
@@ -144,7 +165,6 @@ def renderizar_aba_frequencia(supabase):
 
         # 🛠========= EXIBIÇÃO DIFERENCIADA POR PERFIL =========
         if perfil_atual == "admin":
-            # 🔓 Visão do Administrador: Tabela Dinâmica Completa com Editor
             st.write("📝 *Modo Editor: Altere as presenças diretamente na planilha abaixo.*")
             df_final = pd.DataFrame([{"Nome do Irmão": nome} for nome in mapa_placet_nome.values()])
             
@@ -166,57 +186,5 @@ def renderizar_aba_frequencia(supabase):
                 
             df_editado = st.data_editor(df_final, column_config=config_col, use_container_width=True, hide_index=True, key="editor_frequencia")
             
-            # Lógica para salvar as alterações do Admin no Supabase
-            if st.session_state.editor_frequencia and "edited_rows" in st.session_state.editor_frequencia:
-                alteracoes = st.session_state.editor_frequencia["edited_rows"]
-                for idx, col_alteradas in alteracoes.items():
-                    nome_alt = df_final.iloc[idx]["Nome do Irmão"]
-                    for dt_alt, val_sinal in col_alteradas.items():
-                        id_banco = mapa_ids_banco.get((nome_alt, dt_alt))
-                        status_puro = "Presença"
-                        if "Falta" in val_sinal: status_puro = "Falta"
-                        elif "Justificada" in val_sinal: status_puro = "Justificada"
-                        
-                        if id_banco:
-                            supabase.table("livro_presencas").update({"situacao": status_puro}).eq("id", id_banco).execute()
-                            st.toast(f"Frequência de {nome_alt} atualizada!", icon="💾")
-                st.rerun()
-                
-        else:
-            # 🔒 Visão do Irmão: Mostra apenas o histórico dele em formato de linhas limpas para celular
-            dados_do_irmao = [d for d in dados_filtrados if str(d["Placet_Irmao"]).strip() == str(placet_logado).strip()]
-            
-            if not dados_do_irmao:
-                st.info("Nenhum registro de chamada encontrado para você neste período.")
-            else:
-                # Transforma em formato de tabela simples (Data | Situação)
-                df_irmao = pd.DataFrame(dados_do_irmao)[["Data", "Situacao"]]
-            # Ordena as reuniões de forma decrescente (da mais recente para a antiga)
-          
-            # 🔒 Visão do Irmão: Mostra apenas o histórico dele em formato de linhas limpas para celular
-            dados_do_irmao = [d for d in dados_filtrados if str(d["Placet_Irmao"]).strip() == str(placet_logado).strip()]
-            
-            if not dados_do_irmao:
-                st.info("Nenhum registro de chamada encontrado para você neste período.")
-            else:
-                # Transforma em formato de tabela simples (Data | Situação)
-                df_irmao = pd.DataFrame(dados_do_irmao)[["Data", "Situacao"]]
-                
-                # ⚙️ O SEU TRECHO ENTRA EXATAMENTE AQUI:
-                df_irmao['data_obj'] = df_irmao['Data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
-                df_irmao = df_irmao.sort_values(by='data_obj', ascending=False).drop(columns=['data_obj'])
-                
-                # Desenha a tabela limpa na tela do celular
-                st.dataframe(
-                    df_irmao,
-                    column_config={
-                        "Data": st.column_config.TextColumn("📅 Data da Sessão"),
-                        "Situacao": st.column_config.TextColumn("📋 Sua Situação")
-                    },
-                    use_container_width=True,
-                    hide_index=True
-                )
-            
     except Exception as e:
-        st.error("Erro ao processar pauta.")
-        st.code(e)
+        st.error(f"Erro ao carregar o livro de frequência: {e}")
