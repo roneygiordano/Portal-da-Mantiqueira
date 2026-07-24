@@ -1,5 +1,13 @@
 # app.py
 import streamlit as st
+
+# 🏛️ CONFIGURAÇÃO OFICIAL: Define o nome do App e o ícone nativo
+st.set_page_config(
+    page_title="Portal Digital", 
+    page_icon="https://icons8.com", # Link direto da imagem do templo
+    layout="centered"
+)
+
 from supabase import create_client
 from telas.aba_cadastro import renderizar_aba_cadastro
 from telas.aba_frequencia import renderizar_aba_frequencia
