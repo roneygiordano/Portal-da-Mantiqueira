@@ -43,25 +43,9 @@ if "usuario_nome" not in st.session_state:
 if "usuario_placet" not in st.session_state: 
     st.session_state.usuario_placet = None
 
-   # 🔒 3. TELA DE LOGIN: Exibida se o usuário não estiver logado
+# 🔒 1. TELA DE LOGIN: Exibida se o usuário não estiver logado
 if not st.session_state.logado:
-    # Cria duas colunas: uma estreita para a imagem/ícone e uma larga para o texto
-    col_foto, col_titulo = st.columns([1, 4], vertical_alignment="center")
-    
-    with col_foto:
-        # Insira aqui o link da imagem que deseja exibir ao lado do título
-        st.image("https://icons8.com", width=60)
-        
-    with col_titulo:
-        # Título com fonte menor (24px) e espaçamento controlado para não quebrar no celular
-        st.markdown(
-            "<h1 style='font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 0; color: #FFFFFF;'>PORTAL DIGITAL</h1>", 
-            unsafe_allow_html=True
-        )
-        
-    txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
-    # ... O restante do código do botão de login continua igual ...
-
+    st.markdown("<h1 style='text-align: center; letter-spacing: 4px;'>PORTAL DIGITAL</h1>", unsafe_allow_html=True)
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
     
     if st.button("ACESSAR ORIENTE", key="botao_login_oriente"):
