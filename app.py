@@ -51,15 +51,14 @@ if "usuario_placet" not in st.session_state:
 # 🔒 3. TELA DE LOGIN: Exibida se o usuário não estiver logado
 if not st.session_state.logado:
     
-    # 📐 Cria 3 colunas para forçar a centralização da imagem (Esquerda, Centro, Direita)
-    col_esquerda, col_centro, col_direita = st.columns([1, 2, 1])
-    
-    with col_centro:
-        # A imagem fica guardada na coluna do meio, alinhando-se ao centro da tela
-        st.image("maconaria.png", width=80, use_container_width=False)
-    
-    # Título centralizado (sem quebras no celular)
-    st.markdown("<h2 style='text-align: center; font-size: 30px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL 219 DIGITAL</h2>", unsafe_allow_html=True)
+    # 📸 Injeta a imagem e o título juntos em uma estrutura centralizada que o celular não consegue quebrar
+    st.html("""
+        <div style="text-align: center; margin-bottom: 15px;">
+            <img src="app/static/maconaria.png" style="width: 75px; height: auto;" 
+                 onerror="this.src='https://icons8.com';">
+            <h2 style='font-size: 30px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin: 15px 0 20px 0;'>PORTAL 219 DIGITAL</h2>
+        </div>
+    """)
     
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
 
