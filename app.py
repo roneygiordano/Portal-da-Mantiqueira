@@ -1,14 +1,14 @@
 # app.py
 import streamlit as st
 
-# 🏛️ 1. CONFIGURAÇÃO OFICIAL UNIFICADA (OBRIGATORIAMENTE O PRIMEIRO COMANDO DO APP)
+# 🏛️ 1. CONFIGURAÇÃO OFICIAL UNIFICADA
 st.set_page_config(
     page_title="Portal Digital", 
     page_icon="🏛️", 
     layout="centered"
 )
 
-# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ocultação Absoluta do Rodapé/GitHub/Menus)
+# 🎨 2. ESTILIZAÇÃO VISUAL + LIMPADOR AUTOMÁTICO VIA JAVASCRIPT
 st.html("""
     <style>
     /* Cores Originais do seu Projeto (Azul e Dourado) */
@@ -18,100 +18,43 @@ st.html("""
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
     .metrica-box { background-color: #12284C; padding: 20px; border-radius: 5px; border-left: 5px solid #D4AF37; text-align: center; }
     
-    /* 🚫 REMOÇÃO TOTAL DA MARCA D'ÁGUA, GITHUB E COMPONENTES DO STREAMLIT CLOUD */
-    footer { visibility: hidden !important; display: none !important; }
-    [data-testid="stFooter"] { display: none !important; }
-    header { visibility: hidden !important; display: none !important; }
-    [data-testid="stHeader"] { display: none !important; }
-    [data-testid="stToolbar"] { visibility: hidden !important; display: none !important; }
-    .stAppDeployButton { display: none !important; }
-    #MainMenu { visibility: hidden !important; display: none !important; }
-    #GithubIcon { visibility: hidden !important; display: none !important; }
-    
-    /* Remove os links/badges flutuantes do painel de administração da hospedagem */
-    .viewerBadge_link__1S137, .viewerBadge_text__1JaDK, [class^="viewerBadge"] {
-        display: none !important;
+    /* Esconde cabeçalho e rodapé por padrão caso o CSS básico funcione */
+    footer, header, [data-testid="stFooter"], [data-testid="stHeader"], [data-testid="stToolbar"] { 
+        display: none !important; 
+        visibility: hidden !important; 
     }
     </style>
+
+    <script>
+    // Função executada repetidamente para garantir que os elementos sejam apagados assim que surgirem
+    const monitorarERemover = () => {
+        // 1. Remove qualquer elemento HTML do tipo footer ou header
+        document.querySelectorAll('footer, header, [data-testid="stFooter"], [data-testid="stHeader"]').forEach(el => {
+            el.remove();
+        });
+
+        // 2. Procura por links que apontem para o Streamlit ou GitHub e remove o bloco inteiro deles
+        document.querySelectorAll('a').forEach(link => {
+            const href = link.href.toLowerCase();
+            if (href.includes('streamlit.io') || href.includes('github.com')) {
+                // Sobe até o container pai para apagar o botão ou badge por completo
+                let container = link.closest('div') || link;
+                if (container) container.remove();
+            }
+        });
+        
+        // 3. Remove especificamente o badge flutuante de visualização do Streamlit Cloud
+        document.querySelectorAll('[class*="viewerBadge"]').forEach(badge => {
+            badge.remove();
+        });
+    };
+
+    # Executa a limpeza a cada 100 milissegundos para o usuário não ver nem o rastro das barras
+    setInterval(monitorarERemover, 100);
+    </script>
 """)
 
 from supabase import create_client
 from telas.aba_cadastro import renderizar_aba_cadastro
 from telas.aba_frequencia import renderizar_aba_frequencia
-
-# Link de Conexão com o seu Banco de Dados Supabase
-SUPABASE_URL = "https://fklvpiltkvbmdturgdsa.supabase.co"
-SUPABASE_KEY = "sb_publishable_LxS4fWewhz22TTy8wFDFEA_cVbfQ-eL"
-
-# Conexão direta e estável
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# Inicialização segura das variáveis de controle de acesso
-if "logado" not in st.session_state: 
-    st.session_state.logado = False
-if "perfil_usuario" not in st.session_state: 
-    st.session_state.perfil_usuario = "" # "admin" ou "irmao"
-if "usuario_nome" not in st.session_state: 
-    st.session_state.usuario_nome = ""
-if "usuario_placet" not in st.session_state: 
-    st.session_state.usuario_placet = None
-
-# 🔒 3. TELA DE LOGIN: Exibida se o usuário não estiver logado
-if not st.session_state.logado:
-    st.markdown("<h1 style='text-align: center; letter-spacing: 4px;'>PORTAL DIGITAL</h1>", unsafe_allow_html=True)
-    txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
-    
-    if st.button("ACESSAR ORIENTE", key="botao_login_oriente"):
-        if txt_placet.lower() == "admin":
-            st.session_state.logado = True
-            st.session_state.perfil_usuario = "admin"
-            st.session_state.usuario_nome = "Administrador"
-            st.rerun()
-        else:
-            try:
-                # Verifica se o Placet digitado existe na tabela quadro_irmaos
-                resposta = supabase.table("quadro_irmaos").select("*").eq("placet", int(txt_placet)).execute()
-                
-                if resposta.data:
-                    st.session_state.logado = True
-                    st.session_state.perfil_usuario = "irmao"
-                    st.session_state.usuario_nome = resposta.data[0].get("nome", "Irmão")
-                    st.session_state.usuario_placet = int(txt_placet)
-                    st.rerun()
-                else:
-                    st.error("Placet não encontrado no quadro da Loja.")
-            except Exception as erro:
-                st.error("Por favor, insira um número de Placet válido.")
-
-# 🔓 4. ÁREA LOGADA
-else:
-    # Cria uma linha com colunas para alinhar o botão à direita no topo
-    col_vazia, col_sair = st.columns([4, 1], vertical_alignment="center")
-    
-    # O botão de Sair fica na extrema direita, no topo absoluto da área logada
-    if col_sair.button("Sair 🚪", key="botao_sair_sistema"):
-        st.session_state.logado = False
-        st.session_state.perfil_usuario = ""
-        st.session_state.usuario_nome = ""
-        st.session_state.usuario_placet = None
-        st.rerun()
-        
-    # O nome do usuário (Administrador) aparece logo abaixo do botão
-    st.markdown(f"### 🏛️ {st.session_state.usuario_nome}")
-    st.divider() # Linha elegante separando o cabeçalho do conteúdo das abas
-
-    # 🛠️ SEPARAÇÃO DE TELAS BASEADA DO PERFIL
-    if st.session_state.perfil_usuario == "admin":
-        # Administrador enxerga as duas abas normalmente
-        aba_cadastro, aba_frequencia = st.tabs([
-            "📝 Cadastrar Irmão / Reunião", 
-            "📊 Livro de Frequência"
-        ])
-        with aba_cadastro: 
-            renderizar_aba_cadastro(supabase)
-        with aba_frequencia: 
-            renderizar_aba_frequencia(supabase)
-            
-    elif st.session_state.perfil_usuario == "irmao":
-        # Irmão comum entra em uma tela sem abas, direto para a função de frequência
-        renderizar_aba_frequencia(supabase)
+# ... O RESTANTE DO SEU CÓDIGO DO SUPABASE E LOGIN CONTINUA IGUAL ABAIXO ...
