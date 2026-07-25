@@ -48,7 +48,7 @@ if not st.session_state.logado:
     
     # 📸 Adiciona a sua imagem centralizada acima do título
     # Ajuste o "logo.png" para o nome exato do seu arquivo
-    st.image("logo.png", width=120, use_container_width=False)
+    st.image("maconaria.png", width=120, use_container_width=False)
     
     # Título centralizado com a fonte corrigida (sem quebras)
     st.markdown("<h2 style='text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL DIGITAL</h2>", unsafe_allow_html=True)
