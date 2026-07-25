@@ -47,18 +47,28 @@ if "usuario_nome" not in st.session_state:
     st.session_state.usuario_nome = ""
 if "usuario_placet" not in st.session_state: 
     st.session_state.usuario_placet = None
+import base64
 
 # 🔒 3. TELA DE LOGIN: Exibida se o usuário não estiver logado
 if not st.session_state.logado:
     
-    # 📸 Injeta a imagem e o título juntos em uma estrutura centralizada que o celular não consegue quebrar
-    st.html("""
-        <div style="text-align: center; margin-bottom: 15px;">
-            <img src="app/static/maconaria.png" style="width: 80px; height: auto;" 
-                 onerror="this.src='https://icons8.com';">
-            <h2 style='font-size: 30px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin: 15px 0 20px 0;'>PORTAL 219 DIGITAL</h2>
-        </div>
-    """)
+    # 🧠 Método seguro: Lê a imagem física do seu VS Code e converte em texto para o HTML
+    try:
+        with open("maconaria.png", "rb") as arquivo_imagem:
+            imagem_bytes = arquivo_imagem.read()
+            imagem_base64 = base64.b64encode(imagem_bytes).decode()
+        
+        # 📸 Renderiza a imagem e o título 100% centralizados no computador e no celular
+        st.html(f"""
+            <div style="text-align: center; margin-bottom: 15px;">
+                <img src="data:image/png;base64,{imagem_base64}" style="width: 120px; height: auto;">
+                <h2 style='font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin: 15px 0 20px 0;'>PORTAL DIGITAL</h2>
+            </div>
+        """)
+    except FileNotFoundError:
+        # Caso o arquivo não seja encontrado no GitHub, exibe apenas o título para não travar o app
+        st.markdown("<h2 style='text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL DIGITAL</h2>", unsafe_allow_html=True)
+        st.warning("Aviso: O arquivo 'maconaria.png' não foi encontrado na raiz do projeto.")
     
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
 
