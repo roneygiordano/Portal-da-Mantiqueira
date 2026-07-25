@@ -18,7 +18,12 @@ st.set_page_config(page_title="Portal Digital", page_icon="🏛️", layout="cen
 # Estilização Visual Azul e Dourada original do seu projeto
 st.markdown("""
     <style>
-    .stApp { background-color: #0B1D3A; }
+   [data-testid="stImage"] {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 15px auto;
+}
+   .stApp { background-color: #0B1D3A; }
     h1, h2, h3, p, label, .stMarkdown { color: #FFFFFF !important; }
     div.stButton > button:first-child { background-color: #D4AF37 !important; color: #0B1D3A !important; font-weight: bold; width: 100%; border: none; }
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
