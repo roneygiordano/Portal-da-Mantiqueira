@@ -1,6 +1,5 @@
 # app.py
 import streamlit as st
-import streamlit as st
 
 # Código para ocultar os ícones do GitHub, o rodapé do Streamlit e o menu superior
 ocultar_elementos = """
@@ -12,7 +11,6 @@ ocultar_elementos = """
 </style>
 """
 st.markdown(ocultar_elementos, unsafe_allow_html=True)
-
 
 # 🏛️ CONFIGURAÇÃO OFICIAL: Define o nome do App e o ícone nativo
 st.set_page_config(
