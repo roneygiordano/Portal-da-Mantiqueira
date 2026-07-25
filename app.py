@@ -54,7 +54,7 @@ if not st.session_state.logado:
     # 📸 Injeta a imagem e o título juntos em uma estrutura centralizada que o celular não consegue quebrar
     st.html("""
         <div style="text-align: center; margin-bottom: 15px;">
-            <img src="app/static/maconaria.png" style="width: 75px; height: auto;" 
+            <img src="app/static/maconaria.png" style="width: 80px; height: auto;" 
                  onerror="this.src='https://icons8.com';">
             <h2 style='font-size: 30px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin: 15px 0 20px 0;'>PORTAL 219 DIGITAL</h2>
         </div>
