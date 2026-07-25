@@ -56,10 +56,10 @@ if not st.session_state.logado:
     
     with col_centro:
         # A imagem fica guardada na coluna do meio, alinhando-se ao centro da tela
-        st.image("maconaria.png", width=120, use_container_width=False)
+        st.image("maconaria.png", width=80, use_container_width=False)
     
     # Título centralizado (sem quebras no celular)
-    st.markdown("<h2 style='text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL DIGITAL</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; font-size: 30px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL 219 DIGITAL</h2>", unsafe_allow_html=True)
     
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
 
