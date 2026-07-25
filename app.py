@@ -12,7 +12,7 @@ from supabase import create_client
 from telas.aba_cadastro import renderizar_aba_cadastro
 from telas.aba_frequencia import renderizar_aba_frequencia
 
-# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout)
+# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout + Ocultação do GitHub)
 st.markdown("""
     <style>
     /* Força a centralização nativa do bloco de imagens do Streamlit */
@@ -28,6 +28,24 @@ st.markdown("""
     div.stButton > button:first-child { background-color: #D4AF37 !important; color: #0B1D3A !important; font-weight: bold; width: 100%; border: none; }
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
     .metrica-box { background-color: #12284C; padding: 20px; border-radius: 5px; border-left: 5px solid #D4AF37; text-align: center; }
+    
+    /* 🚫 NOVAS REGRAS: Remove o rodapé e o ícone do GitHub que leva ao repositório */
+    footer, [data-testid="stFooter"], [data-testid="stConnectionStatus"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+    }
+    
+    /* Bloqueia especificamente os links e as classes do badge flutuante do GitHub */
+    div[class*="viewerBadge"], 
+    a[class*="viewerBadge"], 
+    .viewerBadge_link__1S137, 
+    a[href*="github.com"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
