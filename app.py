@@ -12,7 +12,7 @@ from supabase import create_client
 from telas.aba_cadastro import renderizar_aba_cadastro
 from telas.aba_frequencia import renderizar_aba_frequencia
 
-# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout + Ocultação Absoluta)
+# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout + Ocultação Mobile Avançada)
 st.markdown("""
     <style>
     /* Força a centralização nativa do bloco de imagens do Streamlit */
@@ -29,22 +29,38 @@ st.markdown("""
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
     .metrica-box { background-color: #12284C; padding: 20px; border-radius: 5px; border-left: 5px solid #D4AF37; text-align: center; }
     
-    /* 🧱 TRUQUE DA MÁSCARA VISUAL: Cobre qualquer rodapé ou badge injetado pelo servidor */
-    body::after {
-        content: "";
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100vw;
-        height: 60px; /* Altura exata para cobrir a barra flutuante do celular */
-        background-color: #0B1D3A !important; /* Mesma cor exata do fundo do seu templo */
-        z-index: 999999 !important; /* Força a ficar na frente de absolutamente tudo */
-        pointer-events: none; /* Evita que o bloco bloqueie cliques em botões legítimos */
+    /* 🚫 MATADOR DE BOTÃO MOBILE: Desliga as barras, os botões flutuantes e o menu inferior do celular */
+    footer, 
+    header, 
+    [data-testid="stFooter"], 
+    [data-testid="stHeader"], 
+    [data-testid="stToolbar"],
+    [data-testid="stConnectionStatus"],
+    [class*="viewerBadge"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
+        position: absolute !important;
+        pointer-events: none !important;
     }
     
-    /* Remove as margens extras criadas pelo Streamlit */
+    /* Zera qualquer link oculto que aponte para o GitHub e tire a segurança do código */
+    a[href*="github.com"] {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        height: 0 !important;
+    }
+    
+    /* Garante que o aplicativo use a tela inteira do smartphone de forma limpa */
+    .stAppDeployButton {
+        display: none !important;
+    }
     .stAppBlockContainer {
-        padding-bottom: 60px !important;
+        padding-bottom: 0px !important;
+        margin-bottom: 0px !important;
     }
     </style>
 """, unsafe_allow_html=True)
