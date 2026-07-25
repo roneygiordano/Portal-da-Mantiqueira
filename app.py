@@ -1,41 +1,43 @@
 # app.py
 import streamlit as st
 
-# Código para ocultar os ícones do GitHub, o rodapé do Streamlit e o menu superior
-ocultar_elementos = """
-<style>
-    #GithubIcon {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    [data-testid="stToolbar"] {visibility: hidden !important;}
-</style>
-"""
-st.markdown(ocultar_elementos, unsafe_allow_html=True)
-
-# 🏛️ CONFIGURAÇÃO OFICIAL: Define o nome do App e o ícone nativo
+# 🏛️ 1. CONFIGURAÇÃO OFICIAL UNIFICADA (OBRIGATORIAMENTE O PRIMEIRO COMANDO DO APP)
 st.set_page_config(
     page_title="Portal Digital", 
-    page_icon="https://icons8.com", # Link direto da imagem do templo
+    page_icon="🏛️", 
     layout="centered"
 )
 
-from supabase import create_client
-from telas.aba_cadastro import renderizar_aba_cadastro
-from telas.aba_frequencia import renderizar_aba_frequencia
-
-# 1. Configuração Inicial da Página
-st.set_page_config(page_title="Portal Digital", page_icon="🏛️", layout="centered")
-
-# Estilização Visual Azul e Dourada original do seu projeto
-st.markdown("""
+# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ocultação Absoluta do Rodapé/GitHub/Menus)
+st.html("""
     <style>
+    /* Cores Originais do seu Projeto (Azul e Dourado) */
     .stApp { background-color: #0B1D3A; }
     h1, h2, h3, p, label, .stMarkdown { color: #FFFFFF !important; }
     div.stButton > button:first-child { background-color: #D4AF37 !important; color: #0B1D3A !important; font-weight: bold; width: 100%; border: none; }
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
     .metrica-box { background-color: #12284C; padding: 20px; border-radius: 5px; border-left: 5px solid #D4AF37; text-align: center; }
+    
+    /* 🚫 REMOÇÃO TOTAL DA MARCA D'ÁGUA, GITHUB E COMPONENTES DO STREAMLIT CLOUD */
+    footer { visibility: hidden !important; display: none !important; }
+    [data-testid="stFooter"] { display: none !important; }
+    header { visibility: hidden !important; display: none !important; }
+    [data-testid="stHeader"] { display: none !important; }
+    [data-testid="stToolbar"] { visibility: hidden !important; display: none !important; }
+    .stAppDeployButton { display: none !important; }
+    #MainMenu { visibility: hidden !important; display: none !important; }
+    #GithubIcon { visibility: hidden !important; display: none !important; }
+    
+    /* Remove os links/badges flutuantes do painel de administração da hospedagem */
+    .viewerBadge_link__1S137, .viewerBadge_text__1JaDK, [class^="viewerBadge"] {
+        display: none !important;
+    }
     </style>
-""", unsafe_allow_html=True)
+""")
+
+from supabase import create_client
+from telas.aba_cadastro import renderizar_aba_cadastro
+from telas.aba_frequencia import renderizar_aba_frequencia
 
 # Link de Conexão com o seu Banco de Dados Supabase
 SUPABASE_URL = "https://fklvpiltkvbmdturgdsa.supabase.co"
@@ -54,7 +56,7 @@ if "usuario_nome" not in st.session_state:
 if "usuario_placet" not in st.session_state: 
     st.session_state.usuario_placet = None
 
-# 🔒 1. TELA DE LOGIN: Exibida se o usuário não estiver logado
+# 🔒 3. TELA DE LOGIN: Exibida se o usuário não estiver logado
 if not st.session_state.logado:
     st.markdown("<h1 style='text-align: center; letter-spacing: 4px;'>PORTAL DIGITAL</h1>", unsafe_allow_html=True)
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
@@ -81,7 +83,7 @@ if not st.session_state.logado:
             except Exception as erro:
                 st.error("Por favor, insira um número de Placet válido.")
 
-# 🔓 2. ÁREA LOGADA
+# 🔓 4. ÁREA LOGADA
 else:
     # Cria uma linha com colunas para alinhar o botão à direita no topo
     col_vazia, col_sair = st.columns([4, 1], vertical_alignment="center")
@@ -98,7 +100,7 @@ else:
     st.markdown(f"### 🏛️ {st.session_state.usuario_nome}")
     st.divider() # Linha elegante separando o cabeçalho do conteúdo das abas
 
-    # 🛠️ SEPARAÇÃO DE TELAS BASEADA NO PERFIL
+    # 🛠️ SEPARAÇÃO DE TELAS BASEADA DO PERFIL
     if st.session_state.perfil_usuario == "admin":
         # Administrador enxerga as duas abas normalmente
         aba_cadastro, aba_frequencia = st.tabs([
@@ -113,4 +115,3 @@ else:
     elif st.session_state.perfil_usuario == "irmao":
         # Irmão comum entra em uma tela sem abas, direto para a função de frequência
         renderizar_aba_frequencia(supabase)
-
