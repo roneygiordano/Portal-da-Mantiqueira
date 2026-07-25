@@ -51,13 +51,18 @@ if "usuario_placet" not in st.session_state:
 # 🔒 3. TELA DE LOGIN: Exibida se o usuário não estiver logado
 if not st.session_state.logado:
     
-    # 📸 Adiciona a sua imagem centralizada acima do título
-    st.image("maconaria.png", width=120, use_container_width=False)
+    # 📐 Cria 3 colunas para forçar a centralização da imagem (Esquerda, Centro, Direita)
+    col_esquerda, col_centro, col_direita = st.columns([1, 2, 1])
     
-    # Título centralizado com a fonte corrigida (sem quebras no celular)
+    with col_centro:
+        # A imagem fica guardada na coluna do meio, alinhando-se ao centro da tela
+        st.image("maconaria.png", width=120, use_container_width=False)
+    
+    # Título centralizado (sem quebras no celular)
     st.markdown("<h2 style='text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL DIGITAL</h2>", unsafe_allow_html=True)
     
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
+
     
     if st.button("ACESSAR ORIENTE", key="botao_login_oriente"):
         if txt_placet.lower() == "admin":
