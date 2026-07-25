@@ -1,10 +1,10 @@
 # app.py
 import streamlit as st
 
-# 🏛️ CONFIGURAÇÃO OFICIAL: Define o nome do App e o ícone nativo
+# 🏛️ 1. CONFIGURAÇÃO OFICIAL UNIFICADA (DEVE SER SEMPRE A PRIMEIRA INSTRUÇÃO DO SCRIPT)
 st.set_page_config(
     page_title="Portal Digital", 
-    page_icon="https://icons8.com", # Link direto da imagem do templo
+    page_icon="🏛️", 
     layout="centered"
 )
 
@@ -12,18 +12,18 @@ from supabase import create_client
 from telas.aba_cadastro import renderizar_aba_cadastro
 from telas.aba_frequencia import renderizar_aba_frequencia
 
-# 1. Configuração Inicial da Página
-st.set_page_config(page_title="Portal Digital", page_icon="🏛️", layout="centered")
-
-# Estilização Visual Azul e Dourada original do seu projeto
+# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout)
 st.markdown("""
     <style>
-   [data-testid="stImage"] {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto 15px auto;
-}
-   .stApp { background-color: #0B1D3A; }
+    /* Força a centralização nativa do bloco de imagens do Streamlit */
+    [data-testid="stImage"] {
+        display: flex !important;
+        justify-content: center !important;
+        margin: 0 auto 15px auto !important;
+    }
+    
+    /* Configurações visuais originais do seu projeto */
+    .stApp { background-color: #0B1D3A; }
     h1, h2, h3, p, label, .stMarkdown { color: #FFFFFF !important; }
     div.stButton > button:first-child { background-color: #D4AF37 !important; color: #0B1D3A !important; font-weight: bold; width: 100%; border: none; }
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
@@ -52,11 +52,11 @@ if "usuario_placet" not in st.session_state:
 if not st.session_state.logado:
     
     # 📸 Adiciona a sua imagem centralizada acima do título
-    # Ajuste o "logo.png" para o nome exato do seu arquivo
     st.image("maconaria.png", width=120, use_container_width=False)
     
-    # Título centralizado com a fonte corrigida (sem quebras)
+    # Título centralizado com a fonte corrigida (sem quebras no celular)
     st.markdown("<h2 style='text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL DIGITAL</h2>", unsafe_allow_html=True)
+    
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
     
     if st.button("ACESSAR ORIENTE", key="botao_login_oriente"):
@@ -81,7 +81,7 @@ if not st.session_state.logado:
             except Exception as erro:
                 st.error("Por favor, insira um número de Placet válido.")
 
-# 🔓 2. ÁREA LOGADA
+# 🔓 4. ÁREA LOGADA
 else:
     # Cabeçalho com o nome de quem entrou e o botão de Sair
     col_t, col_s = st.columns([4, 1])
@@ -108,5 +108,4 @@ else:
             
     elif st.session_state.perfil_usuario == "irmao":
         # Irmão comum entra em uma tela sem abas, direto para a função de frequência
-        # Mas vamos passar o Placet dele para que a tela saiba que deve travar a visão
         renderizar_aba_frequencia(supabase)
