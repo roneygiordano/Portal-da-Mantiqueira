@@ -45,7 +45,7 @@ if "usuario_placet" not in st.session_state:
 
 # 🔒 1. TELA DE LOGIN: Exibida se o usuário não estiver logado
 if not st.session_state.logado:
-    st.markdown("<h2 style='text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL DIGITAL</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 2px; color: #FFFFFF; margin-bottom: 20px;'>PORTAL 219 DIGITAL</h2>", unsafe_allow_html=True)
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
     
     if st.button("ACESSAR ORIENTE", key="botao_login_oriente"):
