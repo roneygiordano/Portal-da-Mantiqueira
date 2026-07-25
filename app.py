@@ -12,7 +12,7 @@ from supabase import create_client
 from telas.aba_cadastro import renderizar_aba_cadastro
 from telas.aba_frequencia import renderizar_aba_frequencia
 
-# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout + Ocultação Mobile Avançada)
+# 🎨 2. ESTILIZAÇÃO VISUAL (Cores do Templo + Ajuste de Layout + Ocultação Avançada)
 st.markdown("""
     <style>
     /* Força a centralização nativa do bloco de imagens do Streamlit */
@@ -29,36 +29,38 @@ st.markdown("""
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
     .metrica-box { background-color: #12284C; padding: 20px; border-radius: 5px; border-left: 5px solid #D4AF37; text-align: center; }
     
-    /* 🚫 MATADOR DE BOTÃO MOBILE: Desliga as barras, os botões flutuantes e o menu inferior do celular */
-    footer, 
-    header, 
-    [data-testid="stFooter"], 
-    [data-testid="stHeader"], 
+    /* 🛠️ ENGENHARIA REVERSA: Rastreia a barra flutuante mobile e desativa todas as suas dimensões */
+    iframe,
+    footer,
+    [data-testid="stFooter"],
     [data-testid="stToolbar"],
-    [data-testid="stConnectionStatus"],
-    [class*="viewerBadge"] {
+    [data-testid="stHeader"],
+    [data-testid="stConnectionStatus"] {
         display: none !important;
         visibility: hidden !important;
+        height: 0px !important;
+        width: 0px !important;
         opacity: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
-        position: absolute !important;
         pointer-events: none !important;
     }
-    
-    /* Zera qualquer link oculto que aponte para o GitHub e tire a segurança do código */
+
+    /* Intercepta o botão do GitHub escondido pelo servidor no layout de smartphones */
+    div[class*="viewerBadge"],
+    a[class*="viewerBadge"],
+    span[class*="viewerBadge"],
+    .viewerBadge_link__1S137,
     a[href*="github.com"] {
         display: none !important;
         visibility: hidden !important;
+        max-height: 0px !important;
+        max-width: 0px !important;
+        opacity: 0 !important;
+        transform: scale(0) !important;
         pointer-events: none !important;
-        height: 0 !important;
     }
-    
-    /* Garante que o aplicativo use a tela inteira do smartphone de forma limpa */
-    .stAppDeployButton {
-        display: none !important;
-    }
-    .stAppBlockContainer {
+
+    /* Remove qualquer espaçamento que o Streamlit reserve para o rodapé do celular */
+    .stAppBlockContainer, .main {
         padding-bottom: 0px !important;
         margin-bottom: 0px !important;
     }
