@@ -76,7 +76,7 @@ def renderizar_aba_frequencia(supabase):
         .mobile-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 2px;
             margin-bottom: 12px;
         }
         .mobile-card {
