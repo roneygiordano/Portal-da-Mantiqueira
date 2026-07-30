@@ -29,32 +29,37 @@ st.markdown("""
     .card-frequencia { background-color: #12284C; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 10px; }
     .metrica-box { background-color: #12284C; padding: 20px; border-radius: 5px; border-left: 5px solid #D4AF37; text-align: center; }
     
-    /* 🛠️ REMOVE TOTALMENTE O RODAPÉ FLUTUANTE (ÍCONE GITHUB, MADE WITH STREAMLIT, ETC) */
-    footer {visibility: hidden !important;}
-    [data-testid="stFooter"] {display: none !important; visibility: hidden !important;}
-    
-    /* Remove a barra cinza superior e o menu original de 3 pontinhos */
-    header {visibility: hidden !important;}
-    [data-testid="stHeader"] {display: none !important; visibility: hidden !important;}
-    [data-testid="stToolbar"] {display: none !important;}
-
-    /* Alvo cirúrgico nos elementos flutuantes do canto inferior direito no mobile */
-    div[class*="viewerBadge"],
-    a[class*="viewerBadge"],
-    span[class*="viewerBadge"],
-    div[class*="floating"] a,
-    div[class*="styles_viewerBadge"],
-    a[href*="github.com"],
-    a[href*="streamlit.io"] {
+    /* 🛠️ ENGENHARIA REVERSA: Rastreia a barra flutuante mobile e desativa todas as suas dimensões */
+    iframe,
+    footer,
+    [data-testid="stFooter"],
+    [data-testid="stToolbar"],
+    [data-testid="stHeader"],
+    [data-testid="stConnectionStatus"] {
         display: none !important;
         visibility: hidden !important;
-        opacity: 0 !important;
         height: 0px !important;
         width: 0px !important;
+        opacity: 0 !important;
         pointer-events: none !important;
     }
 
-    /* Ajusta as margens para a tela aproveitar 100% do espaço sem rolagens fantasmas */
+    /* Intercepta o botão do GitHub escondido pelo servidor no layout de smartphones */
+    div[class*="viewerBadge"],
+    a[class*="viewerBadge"],
+    span[class*="viewerBadge"],
+    .viewerBadge_link__1S137,
+    a[href*="github.com"] {
+        display: none !important;
+        visibility: hidden !important;
+        max-height: 0px !important;
+        max-width: 0px !important;
+        opacity: 0 !important;
+        transform: scale(0) !important;
+        pointer-events: none !important;
+    }
+
+    /* Remove qualquer espaçamento que o Streamlit reserve para o rodapé do celular */
     .stAppBlockContainer, .main {
         padding-bottom: 0px !important;
         margin-bottom: 0px !important;
@@ -63,7 +68,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Link de Conexão com o seu Banco de Dados Supabase
-SUPABASE_URL = "https://supabase.co"
+SUPABASE_URL = "https://fklvpiltkvbmdturgdsa.supabase.co"
 SUPABASE_KEY = "sb_publishable_LxS4fWewhz22TTy8wFDFEA_cVbfQ-eL"
 
 # Conexão direta e estável
@@ -103,6 +108,7 @@ if not st.session_state.logado:
     
     txt_placet = st.text_input("Número do Placet", placeholder="Digite seu registro ou 'admin'...", key="campo_login_placet")
 
+    
     if st.button("ACESSAR ORIENTE", key="botao_login_oriente"):
         if txt_placet.lower() == "admin":
             st.session_state.logado = True
