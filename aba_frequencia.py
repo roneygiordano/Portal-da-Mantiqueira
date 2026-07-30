@@ -74,11 +74,13 @@ def renderizar_aba_frequencia(supabase):
         st.markdown("""
         <style>
         .mobile-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2px;
-            margin-bottom: 5px;
-        }
+    display: grid !important; /* Força o navegador a aceitar o formato de grade */
+    grid-template-columns: repeat(2, 1fr) !important; /* Obriga a ter exatamente 2 colunas */
+    gap: 6px !important; /* Mantém o espaçamento curto e firme */
+    margin-bottom: 12px !important;
+    width: 100% !important; /* Garante que a grade ocupe toda a largura horizontal */
+}
+
         .mobile-card {
             background-color: rgba(128, 128, 128, 0.06);
             border-radius: 8px;
