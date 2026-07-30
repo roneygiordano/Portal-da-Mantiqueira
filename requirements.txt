@@ -4,7 +4,5 @@ plotly
 fpdf2
 requests
 st-supabase-connection
-streamlit
 supabase
-pandas
 pydantic
